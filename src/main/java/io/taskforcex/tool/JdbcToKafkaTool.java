@@ -77,7 +77,6 @@ public class JdbcToKafkaTool {
                 IPublisher kafkaPublisher = new KafkaPublisher(
                         configuration.getString(JdbcToKafkaToolConfiguration.KAFKA_BOOTSTRAP_SERVERS_CONFIG));
 
-
         ) {
             while (resultSet.next()) {
                 kafkaPublisher.pubSync(
@@ -87,7 +86,8 @@ public class JdbcToKafkaTool {
             }
 
         } catch (SQLException e) {
-            printHelpAndExit(e.getMessage(), getOptions());
+            System.err.println(e.getMessage());
+            System.exit(1);
         }
 
         System.exit(0);
