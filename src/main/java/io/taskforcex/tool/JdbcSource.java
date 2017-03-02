@@ -28,33 +28,61 @@ public class JdbcSource implements ISource {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         JsonObject resultJson = new JsonObject();
 
-        for (int i = 0; i < resultSetMetaData.getColumnCount(); i++) {
+        for (int i = 0; i < resultSetMetaData.getColumnCount(); i ++) {
             String columnName = resultSetMetaData.getColumnName(i + 1);
             int columnType = resultSetMetaData.getColumnType(i + 1);
 
             switch (columnType) {
                 case Types.TINYINT:
+                    resultJson.addProperty(columnName, resultSet.getByte(columnName));
+                    break;
+
                 case Types.SMALLINT:
+                    resultJson.addProperty(columnName, resultSet.getShort(columnName));
+                    break;
+
                 case Types.INTEGER:
+                    resultJson.addProperty(columnName, resultSet.getInt(columnName));
+                    break;
+
                 case Types.BIGINT:
                     resultJson.addProperty(columnName, resultSet.getLong(columnName));
-                    continue;
+                    break;
 
                 case Types.FLOAT:
+                case Types.REAL:
+                    resultJson.addProperty(columnName, resultSet.getFloat(columnName));
+                    break;
+
                 case Types.DOUBLE:
+                    resultJson.addProperty(columnName, resultSet.getDouble(columnName));
+                    break;
+
                 case Types.NUMERIC:
                 case Types.DECIMAL:
-                    resultJson.addProperty(columnName, resultSet.getDouble(columnName));
-                    continue;
+                    resultJson.addProperty(columnName, resultSet.getBigDecimal(columnName));
+                    break;
 
+                case Types.BIT:
                 case Types.BOOLEAN:
                     resultJson.addProperty(columnName, resultSet.getBoolean(columnName));
-                    continue;
+                    break;
+
+                case Types.NCHAR:
+                case Types.NVARCHAR:
+                case Types.LONGNVARCHAR:
+                    resultJson.addProperty(columnName, resultSet.getNString(columnName));
+                    break;
+
+                case Types.CHAR:
+                case Types.VARCHAR:
+                case Types.LONGVARCHAR:
+                    resultJson.addProperty(columnName, resultSet.getString(columnName));
+                    break;
 
                 default:
                     resultJson.addProperty(columnName, resultSet.getString(columnName));
-                    continue;
-
+                    break;
             }
         }
 
