@@ -12,6 +12,11 @@ import java.sql.*;
 public class JdbcSource implements ISource {
     private static final Logger LOG = LoggerFactory.getLogger(JdbcSource.class);
 
+    private static final String POSTGRESQL_URL_PREFIX = "jdbc:postgresql:";
+    private static final String POSTGRESQL_DRIVER_NAME = "org.postgresql.Driver";
+    private static final String HIVE_URL_PREFIX = "jdbc:hive2:";
+    private static final String HIVE_DRIVER_NAME = "org.apache.hive.jdbc.HiveDriver";
+
     private String url;
     private String user;
     private String password;
@@ -28,7 +33,7 @@ public class JdbcSource implements ISource {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         JsonObject resultJson = new JsonObject();
 
-        for (int i = 0; i < resultSetMetaData.getColumnCount(); i ++) {
+        for (int i = 0; i < resultSetMetaData.getColumnCount(); i++) {
             String columnName = resultSetMetaData.getColumnName(i + 1);
             int columnType = resultSetMetaData.getColumnType(i + 1);
 
@@ -89,12 +94,25 @@ public class JdbcSource implements ISource {
         return resultJson;
     }
 
+    private static String getDriverName(String url) {
+        if (url.startsWith(POSTGRESQL_URL_PREFIX)) {
+            return POSTGRESQL_DRIVER_NAME;
+        }
+
+        if (url.startsWith(HIVE_URL_PREFIX)) {
+            return HIVE_DRIVER_NAME;
+        }
+
+        return null;
+    }
+
     @Override
     public void init() {
         try {
+            Class.forName(getDriverName(this.url));
             this.connection = DriverManager.getConnection(this.url, this.user, this.password);
             LOG.info("Successfully connected.");
-        } catch (SQLException e) {
+        } catch (SQLException | ClassNotFoundException e) {
             LOG.error("Failed to connect: " + e.getMessage());
         }
 
