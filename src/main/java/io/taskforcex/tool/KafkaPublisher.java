@@ -51,7 +51,7 @@ public class KafkaPublisher implements IPublisher {
          * under heavy load batching will occur regardless of the linger configuration; however setting this to something
          * larger than 0 can lead to fewer, more efficient requests when not under maximal load at the cost of a small amount of latency.
          */
-        kafkaProps.put(ProducerConfig.LINGER_MS_CONFIG, 1000);
+        kafkaProps.put(ProducerConfig.LINGER_MS_CONFIG, 1);
 
         LOG.info("Setup Kafka pub: " + kafkaProps);
         producer = new KafkaProducer<>(kafkaProps);
