@@ -58,15 +58,16 @@ public class KafkaPublisher implements IPublisher {
     }
 
     public Future<?> pubAsync(String topic, String key, String msg) {
-        LOG.debug("Publish async. " + "topic=" + topic + ", key=" + key + ", msg=" + msg);
+        LOG.debug(String.format("Publish succeed. topic=%s, key=%s, msg=%s", topic, key, msg));
         return producer.send(new ProducerRecord<>(topic, key, msg));
     }
 
     public void pubSync(String topic, String key, String msg) {
         try {
             producer.send(new ProducerRecord<>(topic, key, msg)).get(3, TimeUnit.SECONDS);
-            LOG.debug("Publish succeed. " + "topic=" + topic + ", key=" + key + ", msg=" + msg);
+            LOG.debug(String.format("Publish succeed. topic=%s, key=%s, msg=%s", topic, key, msg));
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOG.error(String.format("Publish failed. topic=%s, key= %s, msg=%s", topic, key, msg));
             throw new RuntimeException("Publish fail", e);
         }
     }
